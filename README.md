@@ -5,9 +5,10 @@ Native JS exports HTML pages as word documents
 
 
 下载文件方法 [this.file_save] 来源于 https://github.com/aadel112/googoose.git
+
 [this.file_save] The method code for downloading files comes from https://github.com/aadel112/googoose.git)
 
-# USE
+# 使用 USE
 
 ```js
 
@@ -31,7 +32,7 @@ let option = {
     
 		let word = new WordExport("导出的块的ID选择器",option);
 		word.export("文件名称", (body)=>{
-      //对即将转为文件的内容做最后的处理，一定要 return
+     			 //对即将转为文件的内容做最后的处理，一定要 return
 			return body.replaceAll("&nbsp;","");
 		});
 ```
