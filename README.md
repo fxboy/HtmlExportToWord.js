@@ -10,9 +10,9 @@ Native JS exports HTML pages as word documents
 
 # 使用 USE
 
-```js
+```javascript
 
-let option = {
+			let option = {
 			"header": {
 				"display": "Print",
 				"Zoom": "75"
