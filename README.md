@@ -12,7 +12,7 @@ Native JS exports HTML pages as word documents
 
 ```javascript
 
-			let option = {
+	       let option = {
 			"header": {
 				"display": "Print",
 				"Zoom": "75"
