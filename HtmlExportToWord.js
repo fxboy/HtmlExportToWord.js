@@ -78,6 +78,9 @@ function WordExport(element,option) {
 		}
 	}
 	
+	/**
+	 *  对比传入的节点，当前宽度是否超过最大宽度，如果超过，则替换成 max （单位pt）
+	 */
 	this.obj_eachCasWidth = function(obj,max){
 		if(obj.offsetWidth * 0.75 > max){
 			obj.width = max + "pt";
@@ -89,7 +92,7 @@ function WordExport(element,option) {
 	}
 	
 	/**
-	 *  创建css
+	 *  向文档内添加CSS
 	 */
 	this.text_createStyle = function(className) {
 		let css = "";
@@ -98,33 +101,39 @@ function WordExport(element,option) {
 		}
 		return className + "{\n " + css + "}\n";
 	}
+	
 	/**
 	 *  处理img对象，将图片转为base64位
+	 *  Forget the source, Baidu or CSDN，Search for many of the same answers
 	 */
 	this.obj_proPictures = function() {
 		let mateType = "";
 		let canvas = document.createElement("canvas");
 		let imgs = elemObject.getElementsByTagName("img");
 		for(let img of imgs){
-			let w = Math.min(img.width, 600);
-			let h = img.height * (w / img.width);
-			// Create canvas for converting image to data URL
-			let canvas = document.createElement("CANVAS");
-			canvas.width = w;
-			canvas.height = h;
-			// Draw image to canvas
-			let context = canvas.getContext('2d');
-			context.drawImage(img, 0, 0, w, h);
-			// Get data URL encoding of image
-			let uri = canvas.toDataURL("image/png");
-			img.width = w;
-			img.height = h;
-			mateType += "--NEXT.ITEM-BOUNDARY\n"
-			mateType += "Content-Location:" + img.src + "\n";
-			mateType += "Content-Type:" +  uri.substring(uri.indexOf(":") + 1, uri.indexOf(";")) + "\n";
-			mateType += "Content-Transfer-Encoding:" +  uri.substring(uri.indexOf(";") + 1, uri.indexOf(",")) + "\n";
-			mateType +=  uri.substring(uri.indexOf(",") + 1) + "\n";
-			img.src = uri;
+			try{
+				let w = Math.min(img.width, 600);
+				let h = img.height * (w / img.width);
+				// Create canvas for converting image to data URL
+				let canvas = document.createElement("CANVAS");
+				canvas.width = w;
+				canvas.height = h;
+				// Draw image to canvas
+				let context = canvas.getContext('2d');
+				context.drawImage(img, 0, 0, w, h);
+				// Get data URL encoding of image
+				let uri = canvas.toDataURL("image/png");
+				img.width = w;
+				img.height = h;
+				mateType += "--NEXT.ITEM-BOUNDARY\n"
+				mateType += "Content-Location:" + img.src + "\n";
+				mateType += "Content-Type:" +  uri.substring(uri.indexOf(":") + 1, uri.indexOf(";")) + "\n";
+				mateType += "Content-Transfer-Encoding:" +  uri.substring(uri.indexOf(";") + 1, uri.indexOf(",")) + "\n";
+				mateType +=  uri.substring(uri.indexOf(",") + 1) + "\n";
+				img.src = uri;
+			}catch(e){
+				console.warn("Picture conversion failed")
+			}
 		}
 		if(mateType != ""){
 			mateType += "--NEXT.ITEM-BOUNDARY--\n"
@@ -134,7 +143,7 @@ function WordExport(element,option) {
 	}
 
 	/**
-	 * 将输入框用span包裹起来
+	 * 将输入框修改为SPAN格式，并新增className 为 props_input，可自行添加css样式
 	 */
 	this.obj_proInputs = function() {
 		let allInputs = elemObject.getElementsByTagName("INPUT");
@@ -146,7 +155,9 @@ function WordExport(element,option) {
 			allInputs[i].remove();
 		}
 	}
-	
+	/**
+	 * 将指定节点下的文本内容替换成指定的文本内容
+	 */
 	this.public_replaceText = function(elm,ot){
 		if(elm.indexOf("#") == 0){
 			for(let o of ot){
@@ -170,19 +181,32 @@ function WordExport(element,option) {
 		}
 	}
 	
+	/**
+	 *  将节点HTML替换成指定的内容
+	 */
 	this.public_removeText = function(id,regx,to){
 		elemObject.getElementById(id).innerHTML = elemObject.getElementById(id).innerHTML.replaceAll(regx,to);
 	}
 
+	/**
+	 *  删除指定节点
+	 */
 	this.public_removeNode = function(id){
 		elemObject.getElementById(id).remove();
 	}
+	
+	/**
+	 *  删除指定类名的节点
+	 */
 	this.public_removeNodes = function(className){
 		let o = elemObject.getElementsByClassName(className);
 		for(let s of o){
 			s.remove();
 		}
 	}
+	/**
+	 *  删除指定标签名的节点
+	 */
 	this.public_removeTag = function(tagName){
 		let o = elemObject.getElementsByTagName(tagName);
 		for(let s of o){
@@ -190,6 +214,9 @@ function WordExport(element,option) {
 		}
 	}
 
+	/**
+	 *  创建文档的头部信息
+	 */
 	this.text_createWordHeader = function(css) {
 		let display = "Print";
 		let zoom = 75;
@@ -221,6 +248,11 @@ function WordExport(element,option) {
 		return x;
 	}
 
+
+	/**
+	 *  将html保存成文件并下载
+	 *  The method code for downloading files comes from https://github.com/aadel112/googoose.git
+	 */
 	this.file_save = function(
 		fileNameToSaveAs, textToWrite
 	) {
@@ -251,6 +283,11 @@ function WordExport(element,option) {
 		}
 	}
 
+	/**
+	 *  导出文件主方法
+	 *  filename:导出的文件名
+	 *  call: 在导出之前且获取到最终文档的内容后，进行处理的方法
+	 */
 	this.export = function(fileName,call) {
 		_this.obj_proElement();
 		let css = "";
