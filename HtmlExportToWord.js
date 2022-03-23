@@ -14,6 +14,10 @@ let pageOptions = {
 		"footerMargin": "",
 		"headerContext": "",
 		"footerContext": "",
+	},
+	"input":{
+		"tal":"&nbsp;",
+		"tar":"&nbsp"
 	}
 }
 
@@ -23,7 +27,7 @@ function WordExport(element,option) {
 	// 获取当前节点的html
 	let opt = option;
 	let elemObject = document.getElementById(element);
-	this.text_pageCss = function() {
+	this.text_pageCss = function() {	
 		let page = {}
 		if (opt.page.marginTop != undefined) page["margin-top"] =           opt.page.marginTop;
 		if (opt.page.marginBottom != undefined) page["margin-bottom"] =     opt.page.marginBotton;
@@ -34,6 +38,9 @@ function WordExport(element,option) {
 		if (opt.page.footerMargin != undefined) page["mso-footer-margin"] = opt.page.footerMargin;
 		if (opt.page.headerContext != undefined) page["mso-header"] =       opt.page.headerContext;
 		if (opt.page.footerContext != undefined) page["mso-footer"] =       opt.page.footerContext;
+		if (opt.page.pageNumber != undefined) page["mso-page-numbers"] =       opt.page.pageNumber;
+		if (opt.page.titlePage != undefined) page["mso-title-page"] =       opt.page.titlePage;
+		
 		let div = {
 			"page": opt.page.className
 		}
@@ -139,18 +146,18 @@ function WordExport(element,option) {
 			mateType += "--NEXT.ITEM-BOUNDARY--\n"
 		}
 		
-		return mateType;
+		return opt.header.mateType?mateType:"";
 	}
 
 	/**
 	 * 将输入框修改为SPAN格式，并新增className 为 props_input，可自行添加css样式
 	 */
-	this.obj_proInputs = function() {
+	this.obj_proInputs = function(tal,tar) {
 		let allInputs = elemObject.getElementsByTagName("INPUT");
 		for(let i=0;i<  allInputs.length; i = 0){
 			let span = document.createElement("SPAN");
 			span.className = "props_input";
-			span.innerText = allInputs[i].value;
+			span.innerText = tal + allInputs[i].value + tar;
 			allInputs[i].parentNode.appendChild(span);
 			allInputs[i].remove();
 		}
@@ -297,7 +304,7 @@ function WordExport(element,option) {
 			css += _this.text_createStyle(name, opt.css[name]);
 		}
 		// 处理INPUT
-		_this.obj_proInputs();
+		_this.obj_proInputs(opt.input == undefined?"&nbsp;":opt.input.tal == undefined?"&nbsp;":opt.input.tal , opt.input == undefined?"&nbsp;":opt.input.tar == undefined?"&nbsp;":opt.input.tar);
 		// 创建头部信息
 		let body =  _this.obj_proPictures();
 		body += _this.text_createWordHeader(css, opt.header);
